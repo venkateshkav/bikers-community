@@ -1,0 +1,53 @@
+{% extends "admin_panel/base_admin.html" %}
+{% block title %}Bulk Import Riders - Bikers Community{% endblock %}
+{% block admin_content %}
+<a href="{% url 'riders_admin:list' %}" class="d-inline-flex align-items-center gap-1 text-muted-app small mb-3"><i class="bi bi-arrow-left"></i> Riders</a>
+
+<h1 class="h4 mb-4">Bulk Import Riders</h1>
+
+<div class="card-app mb-4" style="max-width:560px;">
+  <p class="text-muted-app mb-3">
+    Upload a CSV file with columns <strong>name</strong>, <strong>email</strong>, <strong>mobile</strong>.
+    Each row is validated the same way as adding a rider individually - invalid or duplicate rows are
+    skipped and listed below, valid rows are imported.
+  </p>
+
+  <a href="{% url 'riders_admin:import-sample' %}" class="btn-app btn-outline btn-inline mb-4">
+    <i class="bi bi-download"></i> Download sample CSV
+  </a>
+
+  <form method="post" enctype="multipart/form-data" class="js-guard-submit">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label" for="{{ form.csv_file.id_for_label }}">{{ form.csv_file.label }}</label>
+      {{ form.csv_file }}
+      {% if form.csv_file.errors %}<div class="text-danger small mt-1">{{ form.csv_file.errors.0 }}</div>{% endif %}
+    </div>
+    <button type="submit" class="btn-app btn-primary-app"><i class="bi bi-upload"></i> Import</button>
+  </form>
+</div>
+
+{% if results %}
+  <div class="section-title">Import Results</div>
+
+  {% if results.created %}
+    <div class="card-app mb-3">
+      <div class="fw-semibold text-success mb-2"><i class="bi bi-check-circle-fill"></i> Imported ({{ results.created|length }})</div>
+      <ul class="mb-0 ps-3">
+        {% for name in results.created %}<li>{{ name }}</li>{% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  {% if results.skipped %}
+    <div class="card-app">
+      <div class="fw-semibold text-danger mb-2"><i class="bi bi-x-circle-fill"></i> Skipped ({{ results.skipped|length }})</div>
+      <ul class="mb-0 ps-3">
+        {% for line_number, reason in results.skipped %}
+          <li>Row {{ line_number }}: {{ reason }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+{% endif %}
+{% endblock %}

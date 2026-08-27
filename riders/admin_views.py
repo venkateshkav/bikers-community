@@ -3,13 +3,17 @@ Custom, premium-styled CRUD for the Rider master (separate from
 django.contrib.admin, which remains available as a fallback).
 """
 
+import csv
+
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_http_methods
 
-from .forms import RiderForm
+from . import services
+from .forms import RiderForm, RiderImportForm
 from .models import Rider
 
 
@@ -69,3 +73,34 @@ def rider_toggle_active_view(request, rider_id):
     rider.save(update_fields=["is_active"])
     messages.success(request, f"{rider.name} is now {'active' if rider.is_active else 'inactive'}.")
     return redirect("riders_admin:list")
+
+
+@staff_member_required
+def rider_import_view(request):
+    results = None
+    form = RiderImportForm(request.POST or None, request.FILES or None)
+
+    if request.method == "POST" and form.is_valid():
+        results = services.import_riders_from_csv(form.cleaned_data["csv_file"])
+        if results["created"]:
+            messages.success(request, f"Imported {len(results['created'])} rider(s).")
+        if results["skipped"]:
+            messages.error(request, f"{len(results['skipped'])} row(s) were skipped - see details below.")
+        form = RiderImportForm()
+
+    return render(
+        request,
+        "admin_panel/rider_import.html",
+        {"form": form, "results": results, "active_nav": "riders"},
+    )
+
+
+@staff_member_required
+def rider_import_sample_view(request):
+    response = HttpResponse(content_type="text/csv")
+    response["Content-Disposition"] = 'attachment; filename="riders_sample.csv"'
+    writer = csv.writer(response)
+    writer.writerow(["name", "email", "mobile"])
+    writer.writerow(["Arun Kumar", "arun@example.com", "9876543210"])
+    writer.writerow(["Bala Krishnan", "bala@example.com", "9876500000"])
+    return response

@@ -15,7 +15,7 @@ def dashboard_view(request):
             status=RideRegistration.Status.APPROVED,
             ride__status__in=[Ride.Status.UPCOMING, Ride.Status.ONGOING],
         )
-        .order_by("ride__ride_date", "ride__start_time")
+        .order_by("ride__start_date", "ride__start_time")
         .first()
     )
 
@@ -23,7 +23,7 @@ def dashboard_view(request):
         RideRegistration.objects.select_related("ride")
         .filter(rider=rider, status=RideRegistration.Status.APPROVED)
         .exclude(pk=active_registration.pk if active_registration else None)
-        .order_by("-ride__ride_date")[:5]
+        .order_by("-ride__start_date")[:5]
     )
 
     return render(

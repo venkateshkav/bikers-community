@@ -26,7 +26,8 @@
       <div class="section-title">Upcoming Ride</div>
       <div class="card-app mb-4">
         <h2 class="h5 mb-1">{{ active_registration.ride.name }}</h2>
-        <p class="text-muted-app mb-2"><i class="bi bi-calendar3"></i> {{ active_registration.ride.ride_date|date:"d F Y" }}</p>
+        <p class="text-muted-app mb-1"><i class="bi bi-calendar3"></i> Start: {{ active_registration.ride.start_date|date:"d M Y" }} &middot; {{ active_registration.ride.start_time|date:"h:i A" }}</p>
+        <p class="text-muted-app mb-2"><i class="bi bi-calendar3-check"></i> End: {{ active_registration.ride.end_date|date:"d M Y" }} &middot; {{ active_registration.ride.end_time|date:"h:i A" }}</p>
         <div class="route-line">
           <span>{{ active_registration.ride.start_location }}</span>
           <span class="route-arrow">&rarr;</span>
@@ -51,7 +52,7 @@
       <div class="card-app d-flex align-items-center justify-content-between py-3">
         <div>
           <div class="fw-semibold">{{ reg.ride.name }}</div>
-          <div class="text-muted-app small">{{ reg.ride.ride_date|date:"d M Y" }}</div>
+          <div class="text-muted-app small">{{ reg.ride.start_date|date:"d M Y" }}</div>
         </div>
         {% if reg.is_completed %}
           <span class="pill pill-success"><i class="bi bi-check-circle-fill"></i> Completed</span>

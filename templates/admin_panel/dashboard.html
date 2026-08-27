@@ -10,7 +10,7 @@
     <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-3">
       <div>
         <h2 class="h5 mb-1">{{ c.ride.name }}</h2>
-        <p class="text-muted-app small mb-0"><i class="bi bi-calendar3"></i> {{ c.ride.ride_date|date:"d M Y" }} &middot; {{ c.ride.start_location }} &rarr; {{ c.ride.destination }}</p>
+        <p class="text-muted-app small mb-0"><i class="bi bi-calendar3"></i> {{ c.ride.start_date|date:"d M Y" }} &middot; {{ c.ride.start_location }} &rarr; {{ c.ride.destination }}</p>
       </div>
       <span class="pill {% if c.ride.status == 'ONGOING' %}pill-warning{% elif c.ride.status == 'COMPLETED' %}pill-success{% elif c.ride.status == 'CANCELLED' %}pill-danger{% else %}pill-neutral{% endif %}">
         {{ c.ride.get_status_display }}

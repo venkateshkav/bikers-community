@@ -26,7 +26,7 @@ def dashboard_view(request):
     rides = (
         Ride.objects.exclude(status=Ride.Status.DRAFT)
         .prefetch_related("registrations")
-        .order_by("-ride_date", "-start_time")[:25]
+        .order_by("-start_date", "-start_time")[:25]
     )
     ride_cards = [services.ride_summary(ride) for ride in rides]
     return render(request, "admin_panel/dashboard.html", {"ride_cards": ride_cards, "active_nav": "dashboard"})
@@ -45,7 +45,7 @@ def ride_list_view(request):
     if status:
         rides = rides.filter(status=status)
     if ride_date:
-        rides = rides.filter(ride_date=ride_date)
+        rides = rides.filter(start_date=ride_date)
 
     return render(
         request,

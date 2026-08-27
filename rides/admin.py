@@ -21,10 +21,10 @@ class RideRegistrationInline(admin.TabularInline):
 
 @admin.register(Ride)
 class RideAdmin(admin.ModelAdmin):
-    list_display = ("name", "ride_date", "start_location", "destination", "status", "approved_count", "total_count")
-    list_filter = ("status", "ride_date")
+    list_display = ("name", "start_date", "end_date", "start_location", "destination", "status", "approved_count", "total_count")
+    list_filter = ("status", "start_date")
     search_fields = ("name", "start_location", "destination")
-    date_hierarchy = "ride_date"
+    date_hierarchy = "start_date"
     inlines = [RideRegistrationInline]
     readonly_fields = ("created_at", "updated_at")
 

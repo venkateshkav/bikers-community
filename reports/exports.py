@@ -34,7 +34,7 @@ def export_csv(ride, rows):
 
     writer = csv.writer(response)
     writer.writerow([f"Ride Report: {ride.name}"])
-    writer.writerow([f"Date: {ride.ride_date:%d-%m-%Y}"])
+    writer.writerow([f"Start: {ride.start_date:%d-%m-%Y}  End: {ride.end_date:%d-%m-%Y}"])
     writer.writerow([])
     writer.writerow(HEADERS)
     for row in rows:
@@ -51,7 +51,7 @@ def export_excel(ride, rows):
     ws.title = "Ride Report"
 
     ws.append([f"Ride Report: {ride.name}"])
-    ws.append([f"Date: {ride.ride_date:%d-%m-%Y}"])
+    ws.append([f"Start: {ride.start_date:%d-%m-%Y}  End: {ride.end_date:%d-%m-%Y}"])
     ws.append([])
     ws.append(HEADERS)
     for cell in ws[4]:
@@ -85,7 +85,11 @@ def export_pdf(ride, rows, summary):
     styles = getSampleStyleSheet()
     elements = [
         Paragraph(f"Ride Report: {ride.name}", styles["Title"]),
-        Paragraph(f"Date: {ride.ride_date:%d-%m-%Y} | Route: {ride.start_location} -> {ride.destination}", styles["Normal"]),
+        Paragraph(
+            f"Start: {ride.start_date:%d-%m-%Y} | End: {ride.end_date:%d-%m-%Y} | "
+            f"Route: {ride.start_location} -> {ride.destination}",
+            styles["Normal"],
+        ),
         Spacer(1, 8 * mm),
         Paragraph(
             f"Total Riders: {summary['total_riders']} | Approved: {summary['approved']} | "

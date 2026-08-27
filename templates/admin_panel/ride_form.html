@@ -17,19 +17,6 @@
 
     <div class="row g-3 mb-3">
       <div class="col-12 col-md-6">
-        <label class="form-label" for="{{ form.ride_date.id_for_label }}">Date</label>
-        {{ form.ride_date }}
-        {% if form.ride_date.errors %}<div class="text-danger small mt-1">{{ form.ride_date.errors.0 }}</div>{% endif %}
-      </div>
-      <div class="col-12 col-md-6">
-        <label class="form-label" for="{{ form.status.id_for_label }}">Status</label>
-        {{ form.status }}
-        {% if form.status.errors %}<div class="text-danger small mt-1">{{ form.status.errors.0 }}</div>{% endif %}
-      </div>
-    </div>
-
-    <div class="row g-3 mb-3">
-      <div class="col-12 col-md-6">
         <label class="form-label" for="{{ form.start_location.id_for_label }}">Starting point</label>
         {{ form.start_location }}
         {% if form.start_location.errors %}<div class="text-danger small mt-1">{{ form.start_location.errors.0 }}</div>{% endif %}
@@ -41,25 +28,38 @@
       </div>
     </div>
 
+    <div class="section-title">Starts</div>
     <div class="row g-3 mb-3">
-      <div class="col-12 col-md-4">
+      <div class="col-12 col-md-6">
+        <label class="form-label" for="{{ form.start_date.id_for_label }}">Start date</label>
+        {{ form.start_date }}
+        {% if form.start_date.errors %}<div class="text-danger small mt-1">{{ form.start_date.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="col-12 col-md-6">
         <label class="form-label" for="{{ form.start_time.id_for_label }}">Start time</label>
         {{ form.start_time }}
         {% if form.start_time.errors %}<div class="text-danger small mt-1">{{ form.start_time.errors.0 }}</div>{% endif %}
       </div>
-      <div class="col-12 col-md-4">
-        <label class="form-label" for="{{ form.expected_arrival_time.id_for_label }}">Expected arrival</label>
-        {{ form.expected_arrival_time }}
+    </div>
+
+    <div class="section-title">Ends</div>
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-md-6">
+        <label class="form-label" for="{{ form.end_date.id_for_label }}">End date</label>
+        {{ form.end_date }}
+        {% if form.end_date.errors %}<div class="text-danger small mt-1">{{ form.end_date.errors.0 }}</div>{% endif %}
       </div>
-      <div class="col-12 col-md-4">
-        <label class="form-label" for="{{ form.expected_return_time.id_for_label }}">Expected return</label>
-        {{ form.expected_return_time }}
+      <div class="col-12 col-md-6">
+        <label class="form-label" for="{{ form.end_time.id_for_label }}">End time</label>
+        {{ form.end_time }}
+        {% if form.end_time.errors %}<div class="text-danger small mt-1">{{ form.end_time.errors.0 }}</div>{% endif %}
       </div>
     </div>
 
     <div class="mb-4">
-      <label class="form-label" for="{{ form.description.id_for_label }}">Description</label>
-      {{ form.description }}
+      <label class="form-label" for="{{ form.status.id_for_label }}">Status</label>
+      {{ form.status }}
+      {% if form.status.errors %}<div class="text-danger small mt-1">{{ form.status.errors.0 }}</div>{% endif %}
     </div>
 
     <button type="submit" class="btn-app btn-primary-app"><i class="bi bi-check-circle"></i> Save</button>

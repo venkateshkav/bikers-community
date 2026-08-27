@@ -13,7 +13,7 @@ def my_rides_view(request):
     registrations = (
         RideRegistration.objects.select_related("ride")
         .filter(rider=request.rider, status=RideRegistration.Status.APPROVED)
-        .order_by("-ride__ride_date")
+        .order_by("-ride__start_date")
     )
     return render(request, "rider/my_rides.html", {"registrations": registrations})
 

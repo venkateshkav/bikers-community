@@ -11,10 +11,12 @@ from rides.models import Ride, RideRegistration
 def make_ride():
     return Ride.objects.create(
         name="Pondicherry Weekend Ride",
-        ride_date=datetime.date(2026, 8, 30),
+        start_date=datetime.date(2026, 8, 30),
+        start_time=datetime.time(5, 30),
+        end_date=datetime.date(2026, 8, 30),
+        end_time=datetime.time(20, 0),
         start_location="OMR Toll Gate",
         destination="Pondicherry Beach",
-        start_time=datetime.time(5, 30),
         status=Ride.Status.ONGOING,
     )
 

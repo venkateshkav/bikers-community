@@ -11,14 +11,14 @@ STATUS_CHOICES = ["Not Started", "Destination Pending", "Home Pending", "Complet
 
 @staff_member_required
 def report_list_view(request):
-    rides = Ride.objects.exclude(status=Ride.Status.DRAFT).order_by("-ride_date")
+    rides = Ride.objects.exclude(status=Ride.Status.DRAFT).order_by("-start_date")
 
     ride_date = request.GET.get("date", "").strip()
     status = request.GET.get("status", "").strip()
     name = request.GET.get("name", "").strip()
 
     if ride_date:
-        rides = rides.filter(ride_date=ride_date)
+        rides = rides.filter(start_date=ride_date)
     if status:
         rides = rides.filter(status=status)
     if name:

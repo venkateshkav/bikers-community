@@ -17,10 +17,12 @@ def make_rider(name="Arun Kumar", email="arun@example.com", mobile="9876543210")
 def make_ride(**kwargs):
     defaults = dict(
         name="Pondicherry Weekend Ride",
-        ride_date=datetime.date(2026, 8, 30),
+        start_date=datetime.date(2026, 8, 30),
+        start_time=datetime.time(5, 30),
+        end_date=datetime.date(2026, 8, 30),
+        end_time=datetime.time(20, 0),
         start_location="OMR Toll Gate",
         destination="Pondicherry Beach",
-        start_time=datetime.time(5, 30),
         status=Ride.Status.ONGOING,
     )
     defaults.update(kwargs)
@@ -172,12 +174,13 @@ class RideAdminCrudViewTests(TestCase):
             reverse("admin_panel:ride-create"),
             {
                 "name": "Yercaud Ride",
-                "ride_date": "2026-09-15",
+                "start_date": "2026-09-15",
+                "start_time": "06:00",
+                "end_date": "2026-09-15",
+                "end_time": "20:00",
                 "start_location": "Salem",
                 "destination": "Yercaud",
-                "start_time": "06:00",
                 "status": Ride.Status.UPCOMING,
-                "description": "",
             },
         )
         ride = Ride.objects.get(name="Yercaud Ride")
@@ -190,12 +193,13 @@ class RideAdminCrudViewTests(TestCase):
             reverse("admin_panel:ride-edit", args=[ride.id]),
             {
                 "name": "Pondicherry Weekend Ride (Updated)",
-                "ride_date": ride.ride_date,
+                "start_date": ride.start_date,
+                "start_time": "05:30",
+                "end_date": ride.end_date,
+                "end_time": ride.end_time,
                 "start_location": ride.start_location,
                 "destination": ride.destination,
-                "start_time": "05:30",
                 "status": ride.status,
-                "description": "",
             },
         )
         self.assertRedirects(response, reverse("admin_panel:ride-status", args=[ride.id]))

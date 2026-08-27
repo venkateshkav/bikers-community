@@ -11,13 +11,12 @@ class Ride(models.Model):
         CANCELLED = "CANCELLED", "Cancelled"
 
     name = models.CharField(max_length=200)
-    ride_date = models.DateField()
+    start_date = models.DateField()
+    start_time = models.TimeField()
+    end_date = models.DateField()
+    end_time = models.TimeField()
     start_location = models.CharField(max_length=255)
     destination = models.CharField(max_length=255)
-    start_time = models.TimeField()
-    expected_arrival_time = models.TimeField(null=True, blank=True)
-    expected_return_time = models.TimeField(null=True, blank=True)
-    description = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.DRAFT, db_index=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="rides_created"
@@ -26,11 +25,11 @@ class Ride(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["-ride_date", "-start_time"]
-        indexes = [models.Index(fields=["ride_date", "status"])]
+        ordering = ["-start_date", "-start_time"]
+        indexes = [models.Index(fields=["start_date", "status"])]
 
     def __str__(self):
-        return f"{self.name} ({self.ride_date:%d-%m-%Y})"
+        return f"{self.name} ({self.start_date:%d-%m-%Y})"
 
     def is_locked(self):
         """Cancelled/completed rides can no longer accept new journey actions."""

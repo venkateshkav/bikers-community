@@ -3,7 +3,10 @@
 {% block admin_content %}
 <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
   <h1 class="h4 mb-0">Riders</h1>
-  <a href="{% url 'riders_admin:create' %}" class="btn-app btn-primary-app btn-inline"><i class="bi bi-person-plus"></i> Add Rider</a>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="{% url 'riders_admin:import' %}" class="btn-app btn-outline btn-inline"><i class="bi bi-upload"></i> Bulk Import</a>
+    <a href="{% url 'riders_admin:create' %}" class="btn-app btn-primary-app btn-inline"><i class="bi bi-person-plus"></i> Add Rider</a>
+  </div>
 </div>
 
 <form method="get" class="filter-bar">
