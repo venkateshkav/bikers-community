@@ -449,7 +449,8 @@ img, svg, table { max-width: 100%; }
 
 @media (min-width: 992px) {
   .admin-sidebar {
-    display: block;
+    display: flex;
+    flex-direction: column;
     width: 240px;
     flex-shrink: 0;
     border-right: 1px solid var(--color-border);

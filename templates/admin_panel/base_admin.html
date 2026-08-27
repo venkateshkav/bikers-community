@@ -38,7 +38,7 @@
   </div>
 
   <div class="container-admin d-flex flex-grow-1">
-    <aside class="admin-sidebar d-flex flex-column">
+    <aside class="admin-sidebar">
       <a href="{% url 'admin_panel:dashboard' %}" class="{% if active_nav == 'dashboard' %}active{% endif %}"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
       <a href="{% url 'riders_admin:list' %}" class="{% if active_nav == 'riders' %}active{% endif %}"><i class="bi bi-people me-2"></i> Riders</a>
       <a href="{% url 'admin_panel:ride-list' %}" class="{% if active_nav == 'rides' %}active{% endif %}"><i class="bi bi-signpost-2 me-2"></i> Rides</a>
