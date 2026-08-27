@@ -1,0 +1,54 @@
+{% load tz %}
+<div class="d-flex flex-column gap-3">
+
+  {# ---------------- Starting Point ---------------- #}
+  {% if registration.starting_point_reached_at %}
+    <button type="button" class="btn-app btn-complete" disabled>
+      <i class="bi bi-check-circle-fill"></i>
+      Starting Point &middot; {{ registration.starting_point_reached_at|timezone:"Asia/Kolkata"|date:"h:i A" }}
+    </button>
+  {% else %}
+    <form method="post" action="{% url 'rides:starting-point' registration.ride_id %}" class="js-guard-submit">
+      {% csrf_token %}
+      <button type="submit" class="btn-app btn-primary-app">
+        <i class="bi bi-geo-alt-fill"></i> Starting Point
+      </button>
+    </form>
+  {% endif %}
+
+  {# ---------------- Destination ---------------- #}
+  {% if registration.destination_reached_at %}
+    <button type="button" class="btn-app btn-complete" disabled>
+      <i class="bi bi-check-circle-fill"></i>
+      Destination &middot; {{ registration.destination_reached_at|timezone:"Asia/Kolkata"|date:"h:i A" }}
+    </button>
+  {% elif registration.starting_point_reached_at %}
+    <form method="post" action="{% url 'rides:destination' registration.ride_id %}" class="js-guard-submit">
+      {% csrf_token %}
+      <button type="submit" class="btn-app btn-primary-app">
+        <i class="bi bi-signpost-2-fill"></i> Destination
+      </button>
+    </form>
+  {% else %}
+    <button type="button" class="btn-app btn-secondary-app" disabled>
+      <i class="bi bi-signpost-2"></i> Destination
+    </button>
+  {% endif %}
+
+  {# ---------------- Home Confirmation ---------------- #}
+  {% if registration.home_reached_at %}
+    <button type="button" class="btn-app btn-complete" disabled>
+      <i class="bi bi-check-circle-fill"></i>
+      Home Confirmation &middot; {{ registration.home_reached_at|timezone:"Asia/Kolkata"|date:"h:i A" }}
+    </button>
+  {% elif registration.destination_reached_at %}
+    <a href="{% url 'rides:home-confirmation' registration.ride_id %}" class="btn-app btn-accent-app">
+      <i class="bi bi-house-fill"></i> Home Confirmation
+    </a>
+  {% else %}
+    <button type="button" class="btn-app btn-secondary-app" disabled>
+      <i class="bi bi-house"></i> Home Confirmation
+    </button>
+  {% endif %}
+
+</div>

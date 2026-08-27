@@ -1,0 +1,22 @@
+{% if reg.status == 'PENDING' %}
+  <div class="d-flex gap-2 flex-wrap">
+    <form method="post" action="{% url 'admin_panel:registration-approve' reg.ride_id reg.id %}">
+      {% csrf_token %}
+      <button type="submit" class="btn-app btn-success-app btn-inline"><i class="bi bi-check-lg"></i> Approve</button>
+    </form>
+    <form method="post" action="{% url 'admin_panel:registration-reject' reg.ride_id reg.id %}">
+      {% csrf_token %}
+      <button type="submit" class="btn-app btn-danger-app btn-inline"><i class="bi bi-x-lg"></i> Reject</button>
+    </form>
+  </div>
+{% elif reg.status == 'APPROVED' %}
+  <div class="d-flex flex-column gap-2">
+    {% include "partials/override_form.html" %}
+    <form method="post" action="{% url 'admin_panel:registration-cancel' reg.ride_id reg.id %}" onsubmit="return confirm('Remove {{ reg.rider.name }} from this ride?');">
+      {% csrf_token %}
+      <button type="submit" class="btn-app btn-ghost btn-inline" style="color:var(--color-danger);"><i class="bi bi-person-dash"></i> Remove</button>
+    </form>
+  </div>
+{% else %}
+  <span class="text-muted-app small">{{ reg.get_status_display }}</span>
+{% endif %}

@@ -1,0 +1,68 @@
+{% extends "admin_panel/base_admin.html" %}
+{% block title %}{{ title }} - Bikers Community{% endblock %}
+{% block admin_content %}
+<a href="{% url 'admin_panel:ride-list' %}" class="d-inline-flex align-items-center gap-1 text-muted-app small mb-3"><i class="bi bi-arrow-left"></i> Rides</a>
+
+<h1 class="h4 mb-4">{{ title }}</h1>
+
+<div class="card-app" style="max-width:640px;">
+  <form method="post" class="js-guard-submit" novalidate>
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label class="form-label" for="{{ form.name.id_for_label }}">Ride name</label>
+      {{ form.name }}
+      {% if form.name.errors %}<div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>{% endif %}
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-12 col-md-6">
+        <label class="form-label" for="{{ form.ride_date.id_for_label }}">Date</label>
+        {{ form.ride_date }}
+        {% if form.ride_date.errors %}<div class="text-danger small mt-1">{{ form.ride_date.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="col-12 col-md-6">
+        <label class="form-label" for="{{ form.status.id_for_label }}">Status</label>
+        {{ form.status }}
+        {% if form.status.errors %}<div class="text-danger small mt-1">{{ form.status.errors.0 }}</div>{% endif %}
+      </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-12 col-md-6">
+        <label class="form-label" for="{{ form.start_location.id_for_label }}">Starting point</label>
+        {{ form.start_location }}
+        {% if form.start_location.errors %}<div class="text-danger small mt-1">{{ form.start_location.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="col-12 col-md-6">
+        <label class="form-label" for="{{ form.destination.id_for_label }}">Destination</label>
+        {{ form.destination }}
+        {% if form.destination.errors %}<div class="text-danger small mt-1">{{ form.destination.errors.0 }}</div>{% endif %}
+      </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-12 col-md-4">
+        <label class="form-label" for="{{ form.start_time.id_for_label }}">Start time</label>
+        {{ form.start_time }}
+        {% if form.start_time.errors %}<div class="text-danger small mt-1">{{ form.start_time.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="col-12 col-md-4">
+        <label class="form-label" for="{{ form.expected_arrival_time.id_for_label }}">Expected arrival</label>
+        {{ form.expected_arrival_time }}
+      </div>
+      <div class="col-12 col-md-4">
+        <label class="form-label" for="{{ form.expected_return_time.id_for_label }}">Expected return</label>
+        {{ form.expected_return_time }}
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <label class="form-label" for="{{ form.description.id_for_label }}">Description</label>
+      {{ form.description }}
+    </div>
+
+    <button type="submit" class="btn-app btn-primary-app"><i class="bi bi-check-circle"></i> Save</button>
+  </form>
+</div>
+{% endblock %}

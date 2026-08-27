@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{{ ride.name }} - Bikers Community{% endblock %}
+{% block body %}
+<div class="rider-shell">
+  <div class="rider-topbar">
+    <div class="container-app d-flex align-items-center gap-3">
+      <a href="{% url 'riders:dashboard' %}" class="text-white" style="color:#fff !important;"><i class="bi bi-arrow-left fs-5"></i></a>
+      <div class="brand mb-0">Ride Details</div>
+    </div>
+  </div>
+
+  <div class="container-app py-4">
+    {% include "partials/messages.html" %}
+
+    <div class="card-app mb-4">
+      <h1 class="h5 mb-1">{{ ride.name }}</h1>
+      <p class="text-muted-app mb-2"><i class="bi bi-calendar3"></i> {{ ride.ride_date|date:"d F Y" }} &middot; {{ ride.start_time|date:"h:i A" }}</p>
+      <div class="route-line">
+        <span>{{ ride.start_location }}</span>
+        <span class="route-arrow">&rarr;</span>
+        <span>{{ ride.destination }}</span>
+      </div>
+      {% if ride.description %}<p class="text-muted-app small mt-3 mb-0">{{ ride.description }}</p>{% endif %}
+    </div>
+
+    <div class="section-title">Progress</div>
+    <div class="card-app mb-4">
+      {% include "partials/journey_timeline.html" %}
+    </div>
+
+    <div class="section-title">Actions</div>
+    <div class="card-app">
+      {% include "partials/journey_actions.html" %}
+    </div>
+  </div>
+</div>
+{% endblock %}

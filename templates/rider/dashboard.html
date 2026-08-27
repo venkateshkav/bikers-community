@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Bikers Community{% endblock %}
+{% block body %}
+<div class="rider-shell">
+  <div class="rider-topbar">
+    <div class="container-app d-flex align-items-center justify-content-between">
+      <div class="brand">
+        <span class="brand-mark"><i class="bi bi-compass"></i></span>
+        Bikers Community
+      </div>
+      <form method="post" action="{% url 'accounts:logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn-app btn-ghost btn-inline text-white" style="color:#fff;">
+          <i class="bi bi-box-arrow-right"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="container-app py-4">
+    {% include "partials/messages.html" %}
+
+    <h1 class="h4 mb-4">Welcome, {{ rider.name }} <span aria-hidden="true">&#128075;</span></h1>
+
+    {% if active_registration %}
+      <div class="section-title">Upcoming Ride</div>
+      <div class="card-app mb-4">
+        <h2 class="h5 mb-1">{{ active_registration.ride.name }}</h2>
+        <p class="text-muted-app mb-2"><i class="bi bi-calendar3"></i> {{ active_registration.ride.ride_date|date:"d F Y" }}</p>
+        <div class="route-line">
+          <span>{{ active_registration.ride.start_location }}</span>
+          <span class="route-arrow">&rarr;</span>
+          <span>{{ active_registration.ride.destination }}</span>
+        </div>
+        <hr class="divider">
+        {% include "partials/journey_actions.html" with registration=active_registration %}
+      </div>
+    {% else %}
+      <div class="card-app empty-state mb-4">
+        <i class="bi bi-signpost display-6 d-block mb-3 text-faint"></i>
+        No upcoming approved ride right now.
+      </div>
+    {% endif %}
+
+    <div class="d-flex align-items-center justify-content-between mb-2">
+      <div class="section-title mb-0">My Rides</div>
+      <a href="{% url 'rides:my-rides' %}" class="small">View all <i class="bi bi-arrow-right"></i></a>
+    </div>
+
+    {% for reg in recent_registrations %}
+      <div class="card-app d-flex align-items-center justify-content-between py-3">
+        <div>
+          <div class="fw-semibold">{{ reg.ride.name }}</div>
+          <div class="text-muted-app small">{{ reg.ride.ride_date|date:"d M Y" }}</div>
+        </div>
+        {% if reg.is_completed %}
+          <span class="pill pill-success"><i class="bi bi-check-circle-fill"></i> Completed</span>
+        {% else %}
+          <span class="pill pill-warning"><i class="bi bi-clock-fill"></i> {{ reg.journey_status }}</span>
+        {% endif %}
+      </div>
+    {% empty %}
+      {% if active_registration %}
+        <p class="text-muted-app small">No other rides yet.</p>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

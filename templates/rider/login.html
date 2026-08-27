@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block title %}Sign In - Bikers Community{% endblock %}
+{% block body %}
+<div class="rider-shell d-flex align-items-center" style="min-height:100dvh;">
+  <div class="container-app w-100 py-5">
+    <div class="text-center mb-5">
+      <div class="mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:64px;height:64px;border-radius:18px;background:var(--color-primary);color:var(--color-accent);font-size:1.7rem;">
+        <i class="bi bi-compass"></i>
+      </div>
+      <h1 class="h3 mb-1">Bikers Community</h1>
+      <p class="text-muted-app mb-0">Ride Management</p>
+    </div>
+
+    {% include "partials/messages.html" %}
+
+    <div class="card-app">
+      <h2 class="h5 mb-1">Sign in to continue</h2>
+      <p class="text-muted-app mb-4">Enter the email address registered with the ride administrator.</p>
+
+      <form method="post" class="js-guard-submit" novalidate>
+        {% csrf_token %}
+        <div class="mb-4">
+          <label class="form-label" for="{{ form.email.id_for_label }}">Registered email</label>
+          {% render_field form.email %}
+          {% if form.email.errors %}
+            <div class="text-danger small mt-2">{{ form.email.errors.0 }}</div>
+          {% endif %}
+        </div>
+        <button type="submit" class="btn-app btn-primary-app">
+          <i class="bi bi-arrow-right-circle"></i> Continue
+        </button>
+      </form>
+    </div>
+
+    <p class="text-center text-faint small mt-4 mb-0">
+      Don't have access? Contact your ride administrator to get registered.
+    </p>
+  </div>
+</div>
+{% endblock %}

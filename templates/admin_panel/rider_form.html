@@ -1,0 +1,38 @@
+{% extends "admin_panel/base_admin.html" %}
+{% block title %}{{ title }} - Bikers Community{% endblock %}
+{% block admin_content %}
+<a href="{% url 'riders_admin:list' %}" class="d-inline-flex align-items-center gap-1 text-muted-app small mb-3"><i class="bi bi-arrow-left"></i> Riders</a>
+
+<h1 class="h4 mb-4">{{ title }}</h1>
+
+<div class="card-app" style="max-width:520px;">
+  <form method="post" class="js-guard-submit" novalidate>
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label class="form-label" for="{{ form.name.id_for_label }}">Full name</label>
+      {{ form.name }}
+      {% if form.name.errors %}<div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>{% endif %}
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="{{ form.email.id_for_label }}">Email</label>
+      {{ form.email }}
+      {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>{% endif %}
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="{{ form.mobile.id_for_label }}">Mobile</label>
+      {{ form.mobile }}
+      {% if form.mobile.errors %}<div class="text-danger small mt-1">{{ form.mobile.errors.0 }}</div>{% endif %}
+    </div>
+
+    <div class="form-check mb-4">
+      {{ form.is_active }}
+      <label class="form-check-label" for="{{ form.is_active.id_for_label }}">Active (can log in)</label>
+    </div>
+
+    <button type="submit" class="btn-app btn-primary-app"><i class="bi bi-check-circle"></i> Save</button>
+  </form>
+</div>
+{% endblock %}

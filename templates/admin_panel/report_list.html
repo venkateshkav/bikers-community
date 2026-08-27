@@ -1,0 +1,44 @@
+{% extends "admin_panel/base_admin.html" %}
+{% block title %}Reports - Bikers Community{% endblock %}
+{% block admin_content %}
+<h1 class="h4 mb-4">Reports</h1>
+
+<form method="get" class="filter-bar">
+  <div class="filter-field">
+    <label class="form-label small">Ride name</label>
+    <input type="text" name="name" class="form-control form-control-sm" value="{{ filters.name }}" placeholder="Search by ride name">
+  </div>
+  <div class="filter-field">
+    <label class="form-label small">Date</label>
+    <input type="date" name="date" class="form-control form-control-sm" value="{{ filters.date }}">
+  </div>
+  <div class="filter-field">
+    <label class="form-label small">Status</label>
+    <select name="status" class="form-select form-select-sm">
+      <option value="">All</option>
+      {% for value, label in ride_status_choices %}
+        <option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="filter-actions">
+    <button type="submit" class="btn-app btn-primary-app btn-inline"><i class="bi bi-funnel"></i> Filter</button>
+  </div>
+</form>
+
+<div class="d-flex flex-column gap-2">
+  {% for ride in rides %}
+    <a href="{% url 'reports:ride-report' ride.id %}" class="text-decoration-none">
+      <div class="card-app d-flex align-items-center justify-content-between py-3">
+        <div>
+          <div class="fw-semibold text-dark">{{ ride.name }}</div>
+          <div class="text-muted-app small">{{ ride.ride_date|date:"d M Y" }} &middot; {{ ride.registrations.count }} riders</div>
+        </div>
+        <span class="pill pill-neutral">{{ ride.get_status_display }}</span>
+      </div>
+    </a>
+  {% empty %}
+    <div class="card-app empty-state">No rides match these filters.</div>
+  {% endfor %}
+</div>
+{% endblock %}

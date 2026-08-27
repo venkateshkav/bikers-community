@@ -1,0 +1,29 @@
+{% if not reg.starting_point_reached_at or not reg.destination_reached_at or not reg.home_reached_at %}
+<button class="btn-app btn-ghost btn-inline" type="button" data-bs-toggle="collapse" data-bs-target="#override-{{ reg.id }}">
+  <i class="bi bi-pencil-square"></i> Manual Update
+</button>
+<div class="collapse mt-2" id="override-{{ reg.id }}">
+  <form method="post" action="{% url 'admin_panel:manual-override' reg.ride_id reg.id %}" class="js-guard-submit p-3" style="background:var(--color-surface-alt);border-radius:var(--radius-md);">
+    {% csrf_token %}
+    <div class="mb-2">
+      <label class="form-label small mb-1">Checkpoint</label>
+      <select name="field" class="form-select form-select-sm" required>
+        {% if not reg.starting_point_reached_at %}<option value="starting_point_reached_at">Starting Point</option>{% endif %}
+        {% if not reg.destination_reached_at %}<option value="destination_reached_at">Destination</option>{% endif %}
+        {% if not reg.home_reached_at %}<option value="home_reached_at">Home Confirmation</option>{% endif %}
+      </select>
+    </div>
+    <div class="mb-2">
+      <label class="form-label small mb-1">Reason</label>
+      <select name="reason" class="form-select form-select-sm" required>
+        <option value="Rider forgot to click">Rider forgot to click</option>
+        <option value="Network issue">Network issue</option>
+        <option value="Rider confirmed through phone call">Rider confirmed through phone call</option>
+        <option value="Admin verified manually">Admin verified manually</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <button type="submit" class="btn-app btn-primary-app btn-inline">Save</button>
+  </form>
+</div>
+{% endif %}

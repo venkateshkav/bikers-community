@@ -1,0 +1,57 @@
+{% extends "admin_panel/base_admin.html" %}
+{% block title %}Rides - Bikers Community{% endblock %}
+{% block admin_content %}
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+  <h1 class="h4 mb-0">Rides</h1>
+  <a href="{% url 'admin_panel:ride-create' %}" class="btn-app btn-primary-app btn-inline"><i class="bi bi-plus-circle"></i> Create Ride</a>
+</div>
+
+<form method="get" class="filter-bar">
+  <div class="filter-field">
+    <label class="form-label small">Ride name</label>
+    <input type="text" name="name" class="form-control form-control-sm" value="{{ filters.name }}" placeholder="Search by name">
+  </div>
+  <div class="filter-field">
+    <label class="form-label small">Date</label>
+    <input type="date" name="date" class="form-control form-control-sm" value="{{ filters.date }}">
+  </div>
+  <div class="filter-field">
+    <label class="form-label small">Status</label>
+    <select name="status" class="form-select form-select-sm">
+      <option value="">All</option>
+      {% for value, label in status_choices %}
+        <option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="filter-actions">
+    <button type="submit" class="btn-app btn-primary-app btn-inline"><i class="bi bi-funnel"></i> Filter</button>
+  </div>
+</form>
+
+<div class="d-flex flex-column gap-2">
+  {% for ride in rides %}
+    <div class="card-app d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 py-3">
+      <div>
+        <div class="fw-semibold">{{ ride.name }}</div>
+        <div class="text-muted-app small">{{ ride.ride_date|date:"d M Y" }} &middot; {{ ride.start_location }} &rarr; {{ ride.destination }}</div>
+      </div>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <span class="pill {% if ride.status == 'ONGOING' %}pill-warning{% elif ride.status == 'COMPLETED' %}pill-success{% elif ride.status == 'CANCELLED' %}pill-danger{% else %}pill-neutral{% endif %}">
+          {{ ride.get_status_display }}
+        </span>
+        <a href="{% url 'admin_panel:ride-status' ride.id %}" class="btn-app btn-outline btn-inline"><i class="bi bi-list-check"></i> Status</a>
+        <a href="{% url 'admin_panel:ride-edit' ride.id %}" class="btn-app btn-outline btn-inline"><i class="bi bi-pencil"></i> Edit</a>
+        {% if ride.status != 'CANCELLED' and ride.status != 'COMPLETED' %}
+          <form method="post" action="{% url 'admin_panel:ride-cancel' ride.id %}" onsubmit="return confirm('Cancel this ride?');">
+            {% csrf_token %}
+            <button type="submit" class="btn-app btn-danger-app btn-inline"><i class="bi bi-x-circle"></i> Cancel</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  {% empty %}
+    <div class="card-app empty-state">No rides match these filters.</div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Home Confirmation - Bikers Community{% endblock %}
+{% block body %}
+<div class="rider-shell d-flex align-items-center" style="min-height:100dvh;">
+  <div class="container-app w-100 py-5">
+    <div class="text-center mb-4">
+      <div class="mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:72px;height:72px;border-radius:20px;background:var(--color-accent-soft);color:var(--color-accent-dark);font-size:2rem;">
+        <i class="bi bi-house-heart-fill"></i>
+      </div>
+      <h1 class="h4 mb-1">Are you safely home?</h1>
+      <p class="text-muted-app mb-0">{{ ride.name }}</p>
+    </div>
+
+    {% include "partials/messages.html" %}
+
+    <div class="card-app">
+      <form method="post" class="js-guard-submit">
+        {% csrf_token %}
+        <button type="submit" class="btn-app btn-success-app mb-3">
+          <i class="bi bi-check-circle-fill"></i> YES, I'M HOME
+        </button>
+      </form>
+      <a href="{% url 'rides:ride-detail' ride.id %}" class="btn-app btn-ghost">Not yet, go back</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

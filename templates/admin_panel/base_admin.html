@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="admin-shell d-flex flex-column">
+  <div class="admin-topbar">
+    <div class="container-admin d-flex align-items-center justify-content-between">
+      <div class="brand">
+        <span class="brand-mark" style="background:var(--color-primary);color:var(--color-accent);width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+          <i class="bi bi-compass"></i>
+        </span>
+        Bikers Community <span class="text-muted-app fw-normal">Admin</span>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <button class="admin-nav-toggle d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminNav">
+          <i class="bi bi-list fs-4"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="offcanvas offcanvas-start admin-offcanvas" tabindex="-1" id="adminNav">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">Menu</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+      <a href="{% url 'admin_panel:dashboard' %}" class="{% if active_nav == 'dashboard' %}active{% endif %}"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+      <a href="{% url 'riders_admin:list' %}" class="{% if active_nav == 'riders' %}active{% endif %}"><i class="bi bi-people me-2"></i> Riders</a>
+      <a href="{% url 'admin_panel:ride-list' %}" class="{% if active_nav == 'rides' %}active{% endif %}"><i class="bi bi-signpost-2 me-2"></i> Rides</a>
+      <a href="{% url 'reports:list' %}" class="{% if active_nav == 'reports' %}active{% endif %}"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports</a>
+      <a href="{% url 'admin_panel:audit-logs' %}" class="{% if active_nav == 'audit' %}active{% endif %}"><i class="bi bi-clock-history me-2"></i> Audit Logs</a>
+      <hr>
+      <a href="/admin/" class="text-muted-app small"><i class="bi bi-gear me-2"></i> Django Admin (advanced)</a>
+      <form method="post" action="/admin/logout/" class="mt-2">
+        {% csrf_token %}
+        <button type="submit" class="btn-app btn-ghost">Logout</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="container-admin d-flex flex-grow-1">
+    <aside class="admin-sidebar d-flex flex-column">
+      <a href="{% url 'admin_panel:dashboard' %}" class="{% if active_nav == 'dashboard' %}active{% endif %}"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+      <a href="{% url 'riders_admin:list' %}" class="{% if active_nav == 'riders' %}active{% endif %}"><i class="bi bi-people me-2"></i> Riders</a>
+      <a href="{% url 'admin_panel:ride-list' %}" class="{% if active_nav == 'rides' %}active{% endif %}"><i class="bi bi-signpost-2 me-2"></i> Rides</a>
+      <a href="{% url 'reports:list' %}" class="{% if active_nav == 'reports' %}active{% endif %}"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports</a>
+      <a href="{% url 'admin_panel:audit-logs' %}" class="{% if active_nav == 'audit' %}active{% endif %}"><i class="bi bi-clock-history me-2"></i> Audit Logs</a>
+      <a href="/admin/" class="text-faint small mt-auto"><i class="bi bi-gear me-2"></i> Django Admin</a>
+    </aside>
+
+    <main class="admin-content px-0 px-lg-4">
+      <div class="px-3 px-lg-0">
+        {% include "partials/messages.html" %}
+        {% block admin_content %}{% endblock %}
+      </div>
+    </main>
+  </div>
+</div>
+{% endblock %}

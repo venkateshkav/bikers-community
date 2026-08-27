@@ -1,0 +1,40 @@
+{% load tz %}
+<div class="mb-2">
+  <div class="journey-step {% if registration.starting_point_reached_at %}is-done{% else %}is-current{% endif %}">
+    <div class="marker"><i class="bi {% if registration.starting_point_reached_at %}bi-check-lg{% else %}bi-geo-alt{% endif %}"></i></div>
+    <div>
+      <div class="step-title">Starting Point</div>
+      {% if registration.starting_point_reached_at %}
+        <div class="step-time">{{ registration.starting_point_reached_at|timezone:"Asia/Kolkata"|date:"h:i A" }}</div>
+      {% else %}
+        <div class="step-time">Pending</div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="journey-connector {% if registration.starting_point_reached_at %}is-done{% endif %}"></div>
+
+  <div class="journey-step {% if registration.destination_reached_at %}is-done{% elif registration.starting_point_reached_at %}is-current{% endif %}">
+    <div class="marker"><i class="bi {% if registration.destination_reached_at %}bi-check-lg{% else %}bi-signpost-2{% endif %}"></i></div>
+    <div>
+      <div class="step-title">Destination</div>
+      {% if registration.destination_reached_at %}
+        <div class="step-time">{{ registration.destination_reached_at|timezone:"Asia/Kolkata"|date:"h:i A" }}</div>
+      {% else %}
+        <div class="step-time">Pending</div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="journey-connector {% if registration.destination_reached_at %}is-done{% endif %}"></div>
+
+  <div class="journey-step {% if registration.home_reached_at %}is-done{% elif registration.destination_reached_at %}is-current{% endif %}">
+    <div class="marker"><i class="bi {% if registration.home_reached_at %}bi-check-lg{% else %}bi-house{% endif %}"></i></div>
+    <div>
+      <div class="step-title">Home Confirmation</div>
+      {% if registration.home_reached_at %}
+        <div class="step-time">{{ registration.home_reached_at|timezone:"Asia/Kolkata"|date:"h:i A" }}</div>
+      {% else %}
+        <div class="step-time">Pending</div>
+      {% endif %}
+    </div>
+  </div>
+</div>

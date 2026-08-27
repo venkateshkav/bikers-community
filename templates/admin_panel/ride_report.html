@@ -1,0 +1,93 @@
+{% extends "admin_panel/base_admin.html" %}
+{% block title %}{{ ride.name }} - Report{% endblock %}
+{% block admin_content %}
+<a href="{% url 'reports:list' %}" class="d-inline-flex align-items-center gap-1 text-muted-app small mb-3"><i class="bi bi-arrow-left"></i> Reports</a>
+
+<div class="mb-4">
+  <h1 class="h4 mb-1">{{ ride.name }}</h1>
+  <p class="text-muted-app small mb-0">Date: {{ ride.ride_date|date:"d-m-Y" }} &middot; {{ ride.start_location }} &rarr; {{ ride.destination }}</p>
+</div>
+
+<div class="row row-cols-2 row-cols-md-4 g-2 mb-4">
+  <div class="col"><div class="stat-card"><div class="stat-value">{{ summary.total_riders }}</div><div class="stat-label">Total Riders</div></div></div>
+  <div class="col"><div class="stat-card"><div class="stat-value">{{ summary.approved }}</div><div class="stat-label">Approved</div></div></div>
+  <div class="col"><div class="stat-card"><div class="stat-value">{{ summary.starting_point_reached }}</div><div class="stat-label">Starting Point</div></div></div>
+  <div class="col"><div class="stat-card"><div class="stat-value">{{ summary.destination_reached }}</div><div class="stat-label">Destination</div></div></div>
+  <div class="col"><div class="stat-card"><div class="stat-value">{{ summary.home_confirmed }}</div><div class="stat-label">Home Confirmed</div></div></div>
+  <div class="col"><div class="stat-card"><div class="stat-value">{{ summary.starting_point_pending }}</div><div class="stat-label">Starting Point Pending</div></div></div>
+  <div class="col"><div class="stat-card"><div class="stat-value">{{ summary.destination_pending }}</div><div class="stat-label">Destination Pending</div></div></div>
+  <div class="col"><div class="stat-card"><div class="stat-value">{{ summary.home_confirmation_pending }}</div><div class="stat-label">Home Pending</div></div></div>
+</div>
+
+<form method="get" class="filter-bar">
+  <div class="filter-field">
+    <label class="form-label small">Rider</label>
+    <input type="text" name="rider" class="form-control form-control-sm" value="{{ filters.rider }}" placeholder="Search by name or email">
+  </div>
+  <div class="filter-field">
+    <label class="form-label small">Status</label>
+    <select name="status" class="form-select form-select-sm">
+      <option value="">All</option>
+      {% for choice in status_choices %}
+        <option value="{{ choice }}" {% if filters.status == choice %}selected{% endif %}>{{ choice }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="filter-actions">
+    <button type="submit" class="btn-app btn-primary-app btn-inline"><i class="bi bi-funnel"></i> Filter</button>
+  </div>
+</form>
+
+<div class="d-flex flex-wrap gap-2 mb-4">
+  <a class="btn-app btn-outline btn-inline" href="{% url 'reports:export-csv' ride.id %}?{{ request.GET.urlencode }}"><i class="bi bi-filetype-csv"></i> Export CSV</a>
+  <a class="btn-app btn-outline btn-inline" href="{% url 'reports:export-excel' ride.id %}?{{ request.GET.urlencode }}"><i class="bi bi-file-earmark-excel"></i> Export Excel</a>
+  <a class="btn-app btn-outline btn-inline" href="{% url 'reports:export-pdf' ride.id %}?{{ request.GET.urlencode }}"><i class="bi bi-file-earmark-pdf"></i> Export PDF</a>
+</div>
+
+<!-- Mobile cards -->
+<div class="rider-status-cards">
+  {% for row in rows %}
+    <div class="rider-status-card">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <div class="fw-semibold">{{ row.rider.name }}</div>
+        <span class="pill {% if row.final_status == 'Completed' %}pill-success{% else %}pill-warning{% endif %}">{{ row.final_status }}</span>
+      </div>
+      <div class="text-muted-app small mb-2">{{ row.rider.email }} &middot; {{ row.rider.mobile }}</div>
+      <div class="checkpoint-row"><span>Starting Point</span><span>{{ row.starting_point_reached_at|date:"h:i A"|default:"Pending" }}</span></div>
+      <div class="checkpoint-row"><span>Destination</span><span>{{ row.destination_reached_at|date:"h:i A"|default:"Pending" }}</span></div>
+      <div class="checkpoint-row"><span>Home</span><span>{{ row.home_reached_at|date:"h:i A"|default:"Pending" }}</span></div>
+    </div>
+  {% empty %}
+    <div class="card-app empty-state">No riders match this filter.</div>
+  {% endfor %}
+</div>
+
+<!-- Desktop table -->
+<div class="admin-table-responsive card-app p-0">
+  <div class="table-responsive">
+    <table class="table align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Rider</th><th>Email</th><th>Mobile</th>
+          <th>Starting Point</th><th>Destination</th><th>Home</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+          <tr>
+            <td class="fw-semibold">{{ row.rider.name }}</td>
+            <td>{{ row.rider.email }}</td>
+            <td>{{ row.rider.mobile }}</td>
+            <td>{{ row.starting_point_reached_at|date:"h:i A"|default:"Pending" }}</td>
+            <td>{{ row.destination_reached_at|date:"h:i A"|default:"Pending" }}</td>
+            <td>{{ row.home_reached_at|date:"h:i A"|default:"Pending" }}</td>
+            <td><span class="pill {% if row.final_status == 'Completed' %}pill-success{% else %}pill-warning{% endif %}">{{ row.final_status }}</span></td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="7" class="text-center text-muted-app py-4">No riders match this filter.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

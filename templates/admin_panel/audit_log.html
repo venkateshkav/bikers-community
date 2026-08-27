@@ -1,0 +1,27 @@
+{% extends "admin_panel/base_admin.html" %}
+{% block title %}Audit Logs - Bikers Community{% endblock %}
+{% block admin_content %}
+<h1 class="h4 mb-4">Audit Logs</h1>
+
+<div class="d-flex flex-column gap-2">
+  {% for log in logs %}
+    <div class="card-app py-3">
+      <div class="d-flex justify-content-between flex-wrap gap-2">
+        <div class="fw-semibold">{{ log.action }}</div>
+        <div class="text-muted-app small">{{ log.created_at|date:"d M Y, h:i A" }}</div>
+      </div>
+      <div class="text-muted-app small mt-1">
+        {% if log.rider %}Rider: {{ log.rider.name }}{% endif %}
+        {% if log.ride %} &middot; Ride: {{ log.ride.name }}{% endif %}
+        {% if log.changed_by %} &middot; By: {{ log.changed_by.get_username }}{% endif %}
+      </div>
+      {% if log.old_value or log.new_value %}
+        <div class="small mt-2"><span class="text-muted-app">{{ log.old_value|default:"—" }}</span> <i class="bi bi-arrow-right mx-1"></i> <span class="fw-semibold">{{ log.new_value }}</span></div>
+      {% endif %}
+      {% if log.reason %}<div class="small text-muted-app mt-1">Reason: {{ log.reason }}</div>{% endif %}
+    </div>
+  {% empty %}
+    <div class="card-app empty-state">No audit entries yet.</div>
+  {% endfor %}
+</div>
+{% endblock %}
