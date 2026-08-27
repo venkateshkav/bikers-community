@@ -22,21 +22,39 @@
   <div class="col"><div class="stat-card"><div class="stat-value">{{ summary.home_confirmed }}</div><div class="stat-label">Home Confirmed</div></div></div>
 </div>
 
-<div class="section-title">Add Rider to this Ride</div>
-<form method="post" action="{% url 'admin_panel:registration-add' ride.id %}" class="filter-bar js-guard-submit">
-  {% csrf_token %}
-  <div class="filter-field">
-    <label class="form-label small">Rider</label>
-    {{ add_rider_form.rider }}
-  </div>
-  <div class="filter-field d-flex align-items-center gap-2" style="flex:0 0 auto;">
-    {{ add_rider_form.auto_approve }}
-    <label class="form-label small mb-0" for="{{ add_rider_form.auto_approve.id_for_label }}">Approve immediately</label>
-  </div>
-  <div class="filter-actions">
-    <button type="submit" class="btn-app btn-primary-app btn-inline"><i class="bi bi-person-plus"></i> Add</button>
-  </div>
-</form>
+<div class="section-title">Add Riders to this Ride</div>
+<div class="card-app mb-4">
+  {% if add_rider_form.riders.field.queryset.exists %}
+    <form method="post" action="{% url 'admin_panel:registration-add' ride.id %}" class="js-guard-submit">
+      {% csrf_token %}
+
+      <input type="text" class="form-control form-control-sm mb-2" placeholder="Search riders&hellip;" data-filter-target="#rideRiderCheckboxList">
+
+      <div class="d-flex justify-content-end mb-2">
+        <button type="button" class="btn-app btn-ghost btn-inline" data-select-all="#rideRiderCheckboxList input[type=checkbox]">Select all / none</button>
+      </div>
+
+      <div id="rideRiderCheckboxList" style="max-height:280px; overflow-y:auto; border:1px solid var(--color-border); border-radius:var(--radius-md); padding:4px 8px;">
+        {% for checkbox in add_rider_form.riders %}
+          <label class="d-flex align-items-center gap-2 py-2" data-filter-row style="border-bottom:1px dashed var(--color-border); cursor:pointer;">
+            {{ checkbox.tag }}
+            <span>{{ checkbox.choice_label }}</span>
+          </label>
+        {% endfor %}
+      </div>
+      {% if add_rider_form.riders.errors %}<div class="text-danger small mt-2">{{ add_rider_form.riders.errors.0 }}</div>{% endif %}
+
+      <div class="d-flex align-items-center gap-2 mt-3 mb-3">
+        {{ add_rider_form.auto_approve }}
+        <label class="form-label small mb-0" for="{{ add_rider_form.auto_approve.id_for_label }}">Approve immediately</label>
+      </div>
+
+      <button type="submit" class="btn-app btn-primary-app btn-inline"><i class="bi bi-person-plus"></i> Add Selected Riders</button>
+    </form>
+  {% else %}
+    <p class="text-muted-app small mb-0">All active riders are already assigned to this ride.</p>
+  {% endif %}
+</div>
 
 <div class="section-title">Rider Status</div>
 

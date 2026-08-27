@@ -39,7 +39,11 @@ class RideForm(forms.ModelForm):
 
 
 class AddRiderToRideForm(forms.Form):
-    rider = forms.ModelChoiceField(queryset=Rider.objects.none(), widget=forms.Select(attrs={"class": "form-select"}))
+    riders = forms.ModelMultipleChoiceField(
+        queryset=Rider.objects.none(),
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "form-check-input"}),
+        label="Riders",
+    )
     auto_approve = forms.BooleanField(
         required=False, initial=True, label="Approve immediately", widget=forms.CheckboxInput(attrs={"class": "form-check-input"})
     )
@@ -52,4 +56,4 @@ class AddRiderToRideForm(forms.Form):
         already_active = RideRegistration.objects.filter(ride=ride, status__in=active_statuses).values_list(
             "rider_id", flat=True
         )
-        self.fields["rider"].queryset = Rider.objects.filter(is_active=True).exclude(id__in=already_active)
+        self.fields["riders"].queryset = Rider.objects.filter(is_active=True).exclude(id__in=already_active)

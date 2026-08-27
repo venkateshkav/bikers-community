@@ -42,18 +42,31 @@ def get_approved_registration(rider, ride_id):
     return registration
 
 
+def _assert_ride_is_open(ride):
+    if ride.status == Ride.Status.DRAFT:
+        raise InvalidTransitionError("This ride has not been published yet.")
+    if ride.is_locked():
+        raise InvalidTransitionError("This ride is no longer active.")
+
+
 @transaction.atomic
 def mark_starting_point(registration):
     registration = RideRegistration.objects.select_for_update().get(pk=registration.pk)
     if registration.status != RideRegistration.Status.APPROVED:
         raise RideAccessDeniedError()
-    if registration.ride.is_locked():
-        raise InvalidTransitionError("This ride is no longer active.")
     if registration.starting_point_reached_at is not None:
         raise AlreadyCompletedError()
+    ride = registration.ride
+    _assert_ride_is_open(ride)
 
     registration.starting_point_reached_at = timezone.now()
     registration.save(update_fields=["starting_point_reached_at"])
+
+    if ride.status == Ride.Status.UPCOMING:
+        # The first rider checking in is what actually starts the ride.
+        ride.status = Ride.Status.ONGOING
+        ride.save(update_fields=["status"])
+
     return registration
 
 
@@ -62,12 +75,11 @@ def mark_destination(registration):
     registration = RideRegistration.objects.select_for_update().get(pk=registration.pk)
     if registration.status != RideRegistration.Status.APPROVED:
         raise RideAccessDeniedError()
-    if registration.ride.is_locked():
-        raise InvalidTransitionError("This ride is no longer active.")
-    if registration.starting_point_reached_at is None:
-        raise InvalidTransitionError("Please complete Starting Point before marking Destination.")
     if registration.destination_reached_at is not None:
         raise AlreadyCompletedError()
+    _assert_ride_is_open(registration.ride)
+    if registration.starting_point_reached_at is None:
+        raise InvalidTransitionError("Please complete Starting Point before marking Destination.")
 
     registration.destination_reached_at = timezone.now()
     registration.save(update_fields=["destination_reached_at"])
@@ -79,15 +91,16 @@ def mark_home_confirmation(registration):
     registration = RideRegistration.objects.select_for_update().get(pk=registration.pk)
     if registration.status != RideRegistration.Status.APPROVED:
         raise RideAccessDeniedError()
-    if registration.destination_reached_at is None:
-        raise InvalidTransitionError("Please complete Destination before marking Home Confirmation.")
     if registration.home_reached_at is not None:
         raise AlreadyCompletedError()
+    ride = registration.ride
+    _assert_ride_is_open(ride)
+    if registration.destination_reached_at is None:
+        raise InvalidTransitionError("Please complete Destination before marking Home Confirmation.")
 
     registration.home_reached_at = timezone.now()
     registration.save(update_fields=["home_reached_at"])
 
-    ride = registration.ride
     total_approved = ride.registrations.filter(status=RideRegistration.Status.APPROVED).count()
     total_home = ride.registrations.filter(home_reached_at__isnull=False).count()
     if total_approved and total_approved == total_home and ride.status == Ride.Status.ONGOING:

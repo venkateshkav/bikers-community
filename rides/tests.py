@@ -114,6 +114,42 @@ class JourneyTransitionTests(TestCase):
             services.mark_home_confirmation(self.registration)
 
 
+class RideStatusGatingTests(TestCase):
+    """A ride's status must gate rider actions, not just approval + step order."""
+
+    def setUp(self):
+        self.rider = make_rider()
+
+    def test_draft_ride_blocks_starting_point(self):
+        ride = make_ride(status=Ride.Status.DRAFT)
+        registration = register(ride, self.rider)
+        with self.assertRaises(services.InvalidTransitionError):
+            services.mark_starting_point(registration)
+
+    def test_upcoming_ride_allows_starting_point_and_promotes_to_ongoing(self):
+        ride = make_ride(status=Ride.Status.UPCOMING)
+        registration = register(ride, self.rider)
+        services.mark_starting_point(registration)
+        ride.refresh_from_db()
+        self.assertEqual(ride.status, Ride.Status.ONGOING)
+
+    def test_cancelled_ride_blocks_starting_point(self):
+        ride = make_ride(status=Ride.Status.CANCELLED)
+        registration = register(ride, self.rider)
+        with self.assertRaises(services.InvalidTransitionError):
+            services.mark_starting_point(registration)
+
+    def test_cancelled_ride_blocks_home_confirmation_even_after_destination(self):
+        ride = make_ride(status=Ride.Status.ONGOING)
+        registration = register(ride, self.rider)
+        services.mark_starting_point(registration)
+        services.mark_destination(registration)
+        ride.status = Ride.Status.CANCELLED
+        ride.save(update_fields=["status"])
+        with self.assertRaises(services.InvalidTransitionError):
+            services.mark_home_confirmation(registration)
+
+
 class RiderActionViewTests(TestCase):
     def setUp(self):
         self.ride = make_ride()
@@ -223,16 +259,29 @@ class RegistrationManagementViewTests(TestCase):
     def test_add_rider_with_auto_approve(self):
         response = self.client.post(
             reverse("admin_panel:registration-add", args=[self.ride.id]),
-            {"rider": self.rider.id, "auto_approve": "on"},
+            {"riders": [self.rider.id], "auto_approve": "on"},
         )
         self.assertRedirects(response, reverse("admin_panel:ride-status", args=[self.ride.id]))
         reg = RideRegistration.objects.get(ride=self.ride, rider=self.rider)
         self.assertEqual(reg.status, RideRegistration.Status.APPROVED)
 
     def test_add_rider_without_auto_approve_stays_pending(self):
-        self.client.post(reverse("admin_panel:registration-add", args=[self.ride.id]), {"rider": self.rider.id})
+        self.client.post(reverse("admin_panel:registration-add", args=[self.ride.id]), {"riders": [self.rider.id]})
         reg = RideRegistration.objects.get(ride=self.ride, rider=self.rider)
         self.assertEqual(reg.status, RideRegistration.Status.PENDING)
+
+    def test_add_multiple_riders_at_once(self):
+        other_rider = make_rider(name="Bala", email="bala2@example.com", mobile="9876511111")
+        self.client.post(
+            reverse("admin_panel:registration-add", args=[self.ride.id]),
+            {"riders": [self.rider.id, other_rider.id], "auto_approve": "on"},
+        )
+        self.assertEqual(
+            RideRegistration.objects.filter(
+                ride=self.ride, rider__in=[self.rider, other_rider], status=RideRegistration.Status.APPROVED
+            ).count(),
+            2,
+        )
 
     def test_approve_pending_registration(self):
         reg = register(self.ride, self.rider, RideRegistration.Status.PENDING)
@@ -257,7 +306,7 @@ class RegistrationManagementViewTests(TestCase):
         reg = register(self.ride, self.rider, RideRegistration.Status.REJECTED)
         self.client.post(
             reverse("admin_panel:registration-add", args=[self.ride.id]),
-            {"rider": self.rider.id, "auto_approve": "on"},
+            {"riders": [self.rider.id], "auto_approve": "on"},
         )
         reg.refresh_from_db()
         self.assertEqual(reg.status, RideRegistration.Status.APPROVED)

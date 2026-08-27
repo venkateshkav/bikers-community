@@ -122,21 +122,30 @@ def add_registration_view(request, ride_id):
     ride = get_object_or_404(Ride, pk=ride_id)
     form = AddRiderToRideForm(ride, request.POST)
     if form.is_valid():
-        rider = form.cleaned_data["rider"]
-        registration, created = RideRegistration.objects.get_or_create(
-            ride=ride, rider=rider, defaults={"status": RideRegistration.Status.PENDING}
-        )
-        if not created:
-            # Re-adding a previously rejected/cancelled rider - reset to pending.
-            registration.status = RideRegistration.Status.PENDING
-            registration.rejected_at = None
-            registration.cancelled_at = None
-            registration.save(update_fields=["status", "rejected_at", "cancelled_at"])
-        if form.cleaned_data["auto_approve"]:
-            services.approve_registration(registration, changed_by=request.user, reason="Added and approved by admin")
-        messages.success(request, f"{rider.name} added to the ride.")
+        auto_approve = form.cleaned_data["auto_approve"]
+        added_names = []
+        for rider in form.cleaned_data["riders"]:
+            registration, created = RideRegistration.objects.get_or_create(
+                ride=ride, rider=rider, defaults={"status": RideRegistration.Status.PENDING}
+            )
+            if not created:
+                # Re-adding a previously rejected/cancelled rider - reset to pending.
+                registration.status = RideRegistration.Status.PENDING
+                registration.rejected_at = None
+                registration.cancelled_at = None
+                registration.save(update_fields=["status", "rejected_at", "cancelled_at"])
+            if auto_approve:
+                services.approve_registration(
+                    registration, changed_by=request.user, reason="Added and approved by admin"
+                )
+            added_names.append(rider.name)
+
+        if added_names:
+            messages.success(request, f"Added {len(added_names)} rider(s): {', '.join(added_names)}.")
+        else:
+            messages.error(request, "Please select at least one rider to add.")
     else:
-        messages.error(request, "Please select a rider to add.")
+        messages.error(request, "Please select at least one rider to add.")
     return redirect("admin_panel:ride-status", ride_id=ride_id)
 
 
